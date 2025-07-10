@@ -2,6 +2,7 @@ package io
 
 import (
 	"encoding/xml"
+	"fmt"
 	"io"
 	"os"
 	"strconv"
@@ -42,13 +43,13 @@ type xmlElement struct {
 func ParseSVG(data []byte) (*types.Document, error) {
 	// 定义XML结构
 	type xmlSVG struct {
-		XMLName  xml.Name `xml:"svg"`
-		Width    string   `xml:"width,attr"`
-		Height   string   `xml:"height,attr"`
-		ViewBox  string   `xml:"viewBox,attr"`
-		Title    string   `xml:"title"`
-		Desc     string   `xml:"desc"`
-		Elements []xmlElement
+		XMLName  xml.Name     `xml:"svg"`
+		Width    string       `xml:"width,attr"`
+		Height   string       `xml:"height,attr"`
+		ViewBox  string       `xml:"viewBox,attr"`
+		Title    string       `xml:"title"`
+		Desc     string       `xml:"desc"`
+		Elements []xmlElement `xml:",any"`
 	}
 
 	// 解析XML
@@ -149,20 +150,29 @@ func parseGroup(xmlEl xmlElement) (*elements.Group, error) {
 	return group, nil
 }
 
-// parseRect 解析矩形元素
+// parseRect 解析矩形元素 / Parse rectangle element
 func parseRect(attrs []xml.Attr) (*elements.Rect, error) {
 	var x, y, width, height float64
+	var err error
 
 	for _, attr := range attrs {
 		switch attr.Name.Local {
 		case "x":
-			x, _ = strconv.ParseFloat(attr.Value, 64)
+			if x, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid x value '%s': %v", attr.Value, err)
+			}
 		case "y":
-			y, _ = strconv.ParseFloat(attr.Value, 64)
+			if y, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid y value '%s': %v", attr.Value, err)
+			}
 		case "width":
-			width, _ = strconv.ParseFloat(attr.Value, 64)
+			if width, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid width value '%s': %v", attr.Value, err)
+			}
 		case "height":
-			height, _ = strconv.ParseFloat(attr.Value, 64)
+			if height, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid height value '%s': %v", attr.Value, err)
+			}
 		}
 	}
 
@@ -178,18 +188,25 @@ func parseRect(attrs []xml.Attr) (*elements.Rect, error) {
 	return rect, nil
 }
 
-// parseCircle 解析圆形元素
+// parseCircle 解析圆形元素 / Parse circle element
 func parseCircle(attrs []xml.Attr) (*elements.Circle, error) {
 	var cx, cy, r float64
+	var err error
 
 	for _, attr := range attrs {
 		switch attr.Name.Local {
 		case "cx":
-			cx, _ = strconv.ParseFloat(attr.Value, 64)
+			if cx, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid cx value '%s': %v", attr.Value, err)
+			}
 		case "cy":
-			cy, _ = strconv.ParseFloat(attr.Value, 64)
+			if cy, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid cy value '%s': %v", attr.Value, err)
+			}
 		case "r":
-			r, _ = strconv.ParseFloat(attr.Value, 64)
+			if r, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid r value '%s': %v", attr.Value, err)
+			}
 		}
 	}
 
@@ -205,20 +222,29 @@ func parseCircle(attrs []xml.Attr) (*elements.Circle, error) {
 	return circle, nil
 }
 
-// parseEllipse 解析椭圆元素
+// parseEllipse 解析椭圆元素 / Parse ellipse element
 func parseEllipse(attrs []xml.Attr) (*elements.Ellipse, error) {
 	var cx, cy, rx, ry float64
+	var err error
 
 	for _, attr := range attrs {
 		switch attr.Name.Local {
 		case "cx":
-			cx, _ = strconv.ParseFloat(attr.Value, 64)
+			if cx, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid cx value '%s': %v", attr.Value, err)
+			}
 		case "cy":
-			cy, _ = strconv.ParseFloat(attr.Value, 64)
+			if cy, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid cy value '%s': %v", attr.Value, err)
+			}
 		case "rx":
-			rx, _ = strconv.ParseFloat(attr.Value, 64)
+			if rx, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid rx value '%s': %v", attr.Value, err)
+			}
 		case "ry":
-			ry, _ = strconv.ParseFloat(attr.Value, 64)
+			if ry, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid ry value '%s': %v", attr.Value, err)
+			}
 		}
 	}
 
@@ -234,20 +260,29 @@ func parseEllipse(attrs []xml.Attr) (*elements.Ellipse, error) {
 	return ellipse, nil
 }
 
-// parseLine 解析线段元素
+// parseLine 解析线段元素 / Parse line element
 func parseLine(attrs []xml.Attr) (*elements.Line, error) {
 	var x1, y1, x2, y2 float64
+	var err error
 
 	for _, attr := range attrs {
 		switch attr.Name.Local {
 		case "x1":
-			x1, _ = strconv.ParseFloat(attr.Value, 64)
+			if x1, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid x1 value '%s': %v", attr.Value, err)
+			}
 		case "y1":
-			y1, _ = strconv.ParseFloat(attr.Value, 64)
+			if y1, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid y1 value '%s': %v", attr.Value, err)
+			}
 		case "x2":
-			x2, _ = strconv.ParseFloat(attr.Value, 64)
+			if x2, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid x2 value '%s': %v", attr.Value, err)
+			}
 		case "y2":
-			y2, _ = strconv.ParseFloat(attr.Value, 64)
+			if y2, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid y2 value '%s': %v", attr.Value, err)
+			}
 		}
 	}
 
@@ -332,16 +367,21 @@ func parsePath(attrs []xml.Attr) (*elements.Path, error) {
 	return path, nil
 }
 
-// parseText 解析文本元素
+// parseText 解析文本元素 / Parse text element
 func parseText(attrs []xml.Attr, content string) (*elements.Text, error) {
 	var x, y float64
+	var err error
 
 	for _, attr := range attrs {
 		switch attr.Name.Local {
 		case "x":
-			x, _ = strconv.ParseFloat(attr.Value, 64)
+			if x, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid x value '%s': %v", attr.Value, err)
+			}
 		case "y":
-			y, _ = strconv.ParseFloat(attr.Value, 64)
+			if y, err = strconv.ParseFloat(attr.Value, 64); err != nil {
+				return nil, fmt.Errorf("invalid y value '%s': %v", attr.Value, err)
+			}
 		}
 	}
 
@@ -357,7 +397,7 @@ func parseText(attrs []xml.Attr, content string) (*elements.Text, error) {
 	return text, nil
 }
 
-// parsePoints 解析点字符串
+// parsePoints 解析点坐标字符串 / Parse points coordinate string
 func parsePoints(pointsStr string) []types.Point {
 	points := make([]types.Point, 0)
 
@@ -366,8 +406,14 @@ func parsePoints(pointsStr string) []types.Point {
 
 	for i := 0; i < len(pairs); i += 2 {
 		if i+1 < len(pairs) {
-			x, _ := strconv.ParseFloat(pairs[i], 64)
-			y, _ := strconv.ParseFloat(pairs[i+1], 64)
+			x, err := strconv.ParseFloat(pairs[i], 64)
+			if err != nil {
+				continue // 跳过无效的坐标
+			}
+			y, err := strconv.ParseFloat(pairs[i+1], 64)
+			if err != nil {
+				continue // 跳过无效的坐标
+			}
 			points = append(points, types.Point{X: x, Y: y})
 		}
 	}

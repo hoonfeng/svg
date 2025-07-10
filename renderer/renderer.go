@@ -110,13 +110,22 @@ func (r *ImageRenderer) renderRect(img *image.RGBA, element types.Element, viewB
 	fillColor := parseColor(attrs["fill"], color.RGBA{0, 0, 0, 0})
 	strokeColor := parseColor(attrs["stroke"], color.RGBA{0, 0, 0, 255})
 
+	// 判断是填充还是描边 / Determine if fill or stroke
+	hasFill := attrs["fill"] != "none" && attrs["fill"] != ""
+	hasStroke := attrs["stroke"] != "none" && attrs["stroke"] != ""
+
 	// 绘制矩形
-	if fillColor != (color.RGBA{0, 0, 0, 0}) {
+	if hasFill && fillColor != (color.RGBA{0, 0, 0, 0}) {
 		DrawRect(img, x1, y1, w, h, fillColor, true)
 	}
 
-	if strokeColor != (color.RGBA{0, 0, 0, 0}) {
+	if hasStroke && strokeColor != (color.RGBA{0, 0, 0, 0}) {
 		DrawRect(img, x1, y1, w, h, strokeColor, false)
+	}
+
+	// 如果既没有填充也没有描边，默认使用填充 / Default to fill if neither fill nor stroke
+	if !hasFill && !hasStroke {
+		DrawRect(img, x1, y1, w, h, color.RGBA{0, 0, 0, 255}, true)
 	}
 
 	return nil

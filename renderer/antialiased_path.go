@@ -471,7 +471,9 @@ type PathBounds struct {
 
 // isPointInComplexPath 使用缠绕数规则检查点是否在复杂路径内 / Check if point is inside complex path using winding rule
 func (r *AntiAliasedPathRenderer) isPointInComplexPath(x, y float64, subPaths [][]types.Point) bool {
-	// 快速边界检查 / Quick bounds check
+	// 使用缠绕数规则：计算所有子路径的缠绕数总和 / Use winding rule: calculate sum of winding numbers for all sub-paths
+	windingNumber := 0
+	
 	for _, subPath := range subPaths {
 		if len(subPath) < 3 {
 			continue
@@ -479,15 +481,19 @@ func (r *AntiAliasedPathRenderer) isPointInComplexPath(x, y float64, subPaths []
 
 		// 计算子路径边界 / Calculate sub-path bounds
 		bounds := r.calculatePathBounds(subPath)
+		// 如果点在边界框外，该子路径对缠绕数的贡献为0 / If point is outside bounds, this sub-path contributes 0 to winding number
 		if x < bounds.MinX || x > bounds.MaxX || y < bounds.MinY || y > bounds.MaxY {
 			continue
 		}
 
+		// 计算该子路径的缠绕数贡献 / Calculate winding number contribution from this sub-path
 		if r.isPointInPathOptimized(x, y, subPath) {
-			return true
+			windingNumber++
 		}
 	}
-	return false
+	
+	// 缠绕数为奇数时点在路径内 / Point is inside when winding number is odd
+	return windingNumber%2 == 1
 }
 
 // calculatePathBounds 计算路径边界框 / Calculate path bounds
